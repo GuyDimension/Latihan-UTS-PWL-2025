@@ -48,6 +48,17 @@ export default function MatkulPage() {
         setEditId(item.id);
         setFormVisible(true);
     };
+    const handleDelete = async (id) => {
+        if (!confirm('Yakin hapus data ini?')) return;
+
+        await fetch('/api/matkul', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+
+        fetchMatkuls();
+    };
 
     return (
         <div>
@@ -97,7 +108,10 @@ export default function MatkulPage() {
                             <td>{index + 1}</td>
                             <td>{item.kode}</td>
                             <td>{item.nama}</td>
-                            <td><button onClick={() => handleEdit(item)}>Edit</button></td>
+                            <td>
+                                <button onClick={() => handleEdit(item)}>Edit</button>
+                                <button onClick={() => handleDelete(item.id)}>Hapus</button>
+                            </td>
                         </tr>
                     ))}
                     {matkuls.length === 0 && (
