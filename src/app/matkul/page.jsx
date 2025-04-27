@@ -9,6 +9,7 @@ export default function MatkulPage() {
     const [nama, setNama ] = useState('');
     const [msg, setMsg ] = useState(''); 
     const [formVisible, setFormVisible ] = useState(false);
+    const [editId, setEditId] = useState(null);
 
     const fetchMatkuls = async () => {
         const res = await fetch('/api/matkul');
@@ -22,21 +23,30 @@ export default function MatkulPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const method = editId ? 'PUT' : 'POST';
         const res = await fetch('/api/matkul', {
-            method: 'POST',
+            method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ kode, nama }),
+            body: JSON.stringify({ id: editId, kode, nama }),
         });
 
         if (res.ok) {
             setMsg('Berhasil disimpan');
             setKode('');
             setNama('');
+            setEditId(null);
             setFormVisible(false);
             fetchMatkuls(); // refresh data
         } else {
             setMsg('Gagal menyimpan data');
         }
+    };
+
+    const handleEdit = (item) => {
+        setKode(item.kode);
+        setNama(item,nama);
+        setEditId(item.id);
+        setFormVisible(true);
     };
 
     return (
@@ -78,6 +88,7 @@ export default function MatkulPage() {
                         <th>No</th>
                         <th>Kode</th>
                         <th>Nama Matkul</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,11 +97,12 @@ export default function MatkulPage() {
                             <td>{index + 1}</td>
                             <td>{item.kode}</td>
                             <td>{item.nama}</td>
+                            <td><button onClick={() => handleEdit(item)}>Edit</button></td>
                         </tr>
                     ))}
                     {matkuls.length === 0 && (
                         <tr>
-                            <td colSpan="3">Belum ada data</td>
+                            <td colSpan="4">Belum ada data</td>
                         </tr>
                     )}
                 </tbody>
